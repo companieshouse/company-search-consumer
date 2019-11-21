@@ -1,9 +1,12 @@
 package main
 
 import (
+	"github.com/Shopify/sarama"
+	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"github.com/companieshouse/chs.go/kafka/klog"
 	"github.com/companieshouse/chs.go/log"
 	"github.com/companieshouse/company-search-consumer/config"
+	gologger "log"
 	"os"
 )
 
@@ -16,4 +19,53 @@ func main() {
 		go klg.Capture()
 	}
 	log.Trace("company-search-consumer starting...", log.Data{"config": cfg})
+
+	// Push the Sarama logs into our custom writer
+	sarama.Logger = gologger.New(&log.Writer{}, "[Sarama] ", gologger.LstdFlags)
+
+	var resetOffset bool
+	if cfg.InitialNotifyOffset != -1 {
+		resetOffset = true
+	}
+
+	consumerConfig := &consumer.Config{
+		Topics:       []string{cfg.StreamCompanyProfileTopic},
+		ZookeeperURL: cfg.ZookeeperURL,
+		BrokerAddr:   cfg.StreamingBrokerAddr,
+	}
+	groupConfig := &consumer.GroupConfig{
+		GroupName:   cfg.ConsumerGroupName,
+		ResetOffset: resetOffset,
+		Chroot:      cfg.ZookeeperChroot,
+	}
+
+	log.Debug("creating consumer group")
+
+	consumer := consumer.NewConsumerGroup(consumerConfig)
+	if err := consumer.JoinGroup(groupConfig); err != nil {
+		log.ErrorC("Error joining consumer group", err, nil)
+		return
+	}
+
+	// Need to find out what schema to use/if a schema for this exists
+
+	//TBC, err := schema.Get(cfg.SchemaRegistryURL, "TBC")
+	//if err != nil {
+	//	log.Error(err)
+	//	os.Exit(1)
+	//}
+
+	log.Debug("initialising service struct ...")
+
+	// Service to be added and below code to be adjusted
+
+	//svc := &service.Service{
+	//	Schema:             sendEmailSchema,
+	//	NotificationAPIURL: cfg.NotificationAPIURL,
+	//	HTTPClient:         http.DefaultClient,
+	//	Consumer:           consumer,
+	//	InitialOffset:      cfg.InitialNotifyOffset,
+	//}
+	//
+	//svc.Start()
 }
