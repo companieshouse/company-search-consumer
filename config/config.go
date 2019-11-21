@@ -11,6 +11,7 @@ type Config struct {
 	gofigure            interface{} `order:"env,flag"`
 	SchemaRegistryURL   string      `env:"SCHEMA_REGISTRY_URL"                 flag:"schema-registry-url"                 flagDesc:"Schema registry url"`
 	StreamingBrokerAddr []string    `env:"KAFKA_STREAMING_BROKER_ADDR"         flag:"streaming-broker-addr"               flagDesc:"Streaming CH Kafka broker cluster address"`
+	LogTopic            string      `env:"LOG_TOPIC"                           flag:"log-topic"                           flagDesc:"Log topic"`
 }
 
 var cfg *Config
