@@ -46,26 +46,4 @@ func main() {
 		log.ErrorC("Error joining consumer group", err, nil)
 		return
 	}
-
-	// Need to find out what schema to use/if a schema for this exists
-
-	//TBC, err := schema.Get(cfg.SchemaRegistryURL, "TBC")
-	//if err != nil {
-	//	log.Error(err)
-	//	os.Exit(1)
-	//}
-
-	log.Debug("initialising service struct ...")
-
-	// Service to be added and below code to be adjusted
-
-	//svc := &service.Service{
-	//	Schema:             sendEmailSchema,
-	//	NotificationAPIURL: cfg.NotificationAPIURL,
-	//	HTTPClient:         http.DefaultClient,
-	//	Consumer:           consumer,
-	//	InitialOffset:      cfg.InitialNotifyOffset,
-	//}
-	//
-	//svc.Start()
 }

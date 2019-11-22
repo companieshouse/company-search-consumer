@@ -17,7 +17,6 @@ type Config struct {
 	ZookeeperURL              string      `env:"KAFKA_ZOOKEEPER_ADDR"                flag:"zookeeper-addr"                      flagDesc:"Zookeeper address"`
 	ConsumerGroupName         string      `env:"CONSUMER_GROUP_NAME"                 flag:"consumer-group-name"                 flagDesc:"Consumer group name"`
 	ZookeeperChroot           string      `env:"KAFKA_ZOOKEEPER_CHROOT"              flag:"zookeeper-chroot"                    flagDesc:"Zookeeper chroot"`
-
 }
 
 var cfg *Config
@@ -28,7 +27,7 @@ func Get() *Config {
 		return cfg
 	}
 
-	cfg = &Config{}
+	cfg = &Config{ConsumerGroupName: "stream-company-profile-consumer-group"}
 
 	err := gofigure.Gofigure(cfg)
 	if err != nil {
