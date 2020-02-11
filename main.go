@@ -24,13 +24,13 @@ func main() {
 	sarama.Logger = gologger.New(&log.Writer{}, "[Sarama] ", gologger.LstdFlags)
 
 	var resetOffset bool
-	if cfg.InitialNotifyOffset != -1 {
+	if cfg.InitialOffset != -1 {
 		resetOffset = true
 	}
 
 	consumerConfig := &consumer.Config{
 		Topics:       []string{cfg.StreamCompanyProfileTopic},
-		ZookeeperURL: cfg.ZookeeperURL,
+		ZookeeperURL: cfg.StreamingZookeeperURL,
 		BrokerAddr:   cfg.StreamingBrokerAddr,
 	}
 	groupConfig := &consumer.GroupConfig{
