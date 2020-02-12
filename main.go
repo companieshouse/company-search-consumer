@@ -5,7 +5,9 @@ import (
 	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"github.com/companieshouse/chs.go/log"
 	"github.com/companieshouse/company-search-consumer/config"
+	"github.com/companieshouse/chs-email-sender/service"
 	gologger "log"
+	"net/http"
 )
 
 func main() {
@@ -42,4 +44,14 @@ func main() {
 	}
 
 	log.Debug("consumer has been successfully initialised")
+
+	svc := &service.Service{
+		Schema:             "resource-changed-data",
+		NotificationAPIURL: "http://api.chs-dev.internal:4089/upsert",
+		HTTPClient:         http.DefaultClient,
+		Consumer:           consumer,
+		InitialOffset:      cfg.InitialOffset,
+	}
+
+	svc.Start()
 }

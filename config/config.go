@@ -28,10 +28,10 @@ func Get() *Config {
 	}
 
 	cfg = &Config{
-		ConsumerGroupName: "stream-company-profile-consumer-group",
-		StreamCompanyProfileTopic : "stream-company-profile",
-		ZookeeperChroot: "",
-		InitialOffset: int64(-1),
+		ConsumerGroupName:         "stream-company-profile-consumer-group",
+		StreamCompanyProfileTopic: "stream-company-profile",
+		ZookeeperChroot:           "",
+		InitialOffset:             int64(-1),
 	}
 
 	err := gofigure.Gofigure(cfg)
