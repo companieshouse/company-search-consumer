@@ -1,18 +1,18 @@
 # company-search-consumer
-A service that consumes messages from the stream-company-profile topic and then sends a RESTful POST request to the search.api.ch.gov.uk service. The data sent through the POST request will be used in search.api.ch.gov.uk to maintain and update the elastic search alpha_index.
+A service that consumes messages from the stream-company-profile topic and then sends a RESTful POST request to the search.api.ch.gov.uk service. The data sent through the POST request will be used in search.api.ch.gov.uk to maintain and update elastic search indexes relating to company search.
 
-Requirements (local setup)
+Requirements
 =============
 
 - [Go](https://golang.org/doc/install)
 - [Git](https://git-scm.com/downloads)
 - [Kafka](https://kafka.apache.org/) - this is installed as part of the chs local build (within the chs-kafka VM)
-- [Kafka 2]
+- [Kafka 2](https://companieshouse.atlassian.net/wiki/spaces/DEV/pages/563806512/Setting+up+Kafka+2+on+Docker+for+Mac+for+use+on+chs-dev) - use this within Docker
 
 Getting started
 --------------
 To build the service:
- 1. Clone the repository into your GOPATH under `src/github.com/companieshouse`
+ 1. Clone the repository
  2. Build the executable using:
  ```shell
  make build

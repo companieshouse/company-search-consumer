@@ -2,15 +2,10 @@ CHS_ENV_HOME  ?= $(HOME)/.chs_env
 TESTS         ?= ./...
 
 bin           := company-search-consumer
-test_path     := ./test
 chs_envs      := $(CHS_ENV_HOME)/global_env $(CHS_ENV_HOME)/company-search-consumer/env
 source_env    := for chs_env in $(chs_envs); do test -f $$chs_env && . $$chs_env; done
 xunit_output  := test.xml
 lint_output   := lint.txt
-
-commit        := $(shell git rev-parse --short HEAD)
-tag           := $(shell git tag -l 'v*-rc*' --points-at HEAD)
-version       := $(shell if [[ -n "$(tag)" ]]; then echo $(tag) | sed 's/^v//'; else echo $(commit); fi)
 
 .EXPORT_ALL_VARIABLES:
 GO111MODULE = on
@@ -31,7 +26,8 @@ test: test-unit test-integration
 
 .PHONY: test-unit
 test-unit:
-	go test $(TESTS) -run 'Unit'
+	go test $(TESTS) -run 'Unit' -coverprofile=coverage.out
+
 
 .PHONY: test-integration
 test-integration:
