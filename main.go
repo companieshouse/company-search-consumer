@@ -5,7 +5,7 @@ import (
 	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"github.com/companieshouse/chs.go/log"
 	"github.com/companieshouse/company-search-consumer/config"
-	"github.com/companieshouse/chs-email-sender/service"
+	"github.com/companieshouse/company-search-consumer/service"
 	gologger "log"
 	"net/http"
 )
