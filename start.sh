@@ -8,6 +8,7 @@ if [[ -z "${MESOS_SLAVE_PID}" ]]; then
     source ~/.chs_env/private_env
     source ~/.chs_env/global_env
     source ~/.chs_env/company-search-consumer/env
+
 else
     PORT="$1"
     CONFIG_URL="$2"
@@ -31,4 +32,4 @@ IFS=',' read -ra BROKERS <<< "${KAFKA_STREAMING_BROKER_ADDR}"
 # Ensure we only populate the broker address via application arguments
 unset KAFKA_STREAMING_BROKER_ADDR
 
-exec "${APP_DIR}/company-search-consumer" "-bind-addr=:${PORT}" $(for broker in "${BROKERS[@]}"; do echo -n "-streaming-broker-addr=${broker} "; done)
+exec "${APP_DIR}/company-search-consumer" $(for broker in "${BROKERS[@]}"; do echo -n "-streaming-broker-addr=${broker} "; done)

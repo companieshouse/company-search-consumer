@@ -14,12 +14,12 @@ import (
 
 // messageMetadata represents resource change data json unmarshal
 type messageMetadata struct {
-	ResourceKind        string `avro:"resource_kind"`
-	ResourceURI    		string `avro:"resource_uri"`
-	ContextID  		    string `avro:"context_id"`
-	ResourceID 		    string `avro:"resource_id"`
-	Data         		string `avro:"data"`
-	Event               Event  `json:"event"`
+	ResourceKind string `avro:"resource_kind"`
+	ResourceURI  string `avro:"resource_uri"`
+	ContextID    string `avro:"context_id"`
+	ResourceID   string `avro:"resource_id"`
+	Data         string `avro:"data"`
+	Event        Event  `json:"event"`
 }
 
 // Event - resource changed data event
@@ -65,6 +65,7 @@ func (svc *Service) Start() {
 			log.Error(err)
 
 		case event := <-svc.Consumer.Messages():
+			log.Info("Begin consume")
 			if svc.InitialOffset == -1 {
 				svc.InitialOffset = event.Offset
 			}
