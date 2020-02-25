@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	// "github.com/companieshouse/chs.go/avro"
+	"github.com/companieshouse/chs.go/avro"
 	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"github.com/companieshouse/chs.go/log"
 )
@@ -19,15 +19,14 @@ type messageMetadata struct {
 	ContextID    string `avro:"context_id"`
 	ResourceID   string `avro:"resource_id"`
 	Data         string `avro:"data"`
-	Event        Event  `json:"event"`
+	Event        Event  `avro:"event"`
 }
 
 // Event - resource changed data event
 type Event struct {
-	FieldsChanged []string `json:"fields_changed,omitempty"`
-	Timepoint     int64    `json:"timepoint"`
-	PublishedAt   string   `json:"published_at"`
-	Type          string   `json:"type"`
+	FieldsChanged []string `avro:"fields_changed,omitempty"`
+	PublishedAt   string   `avro:"published_at"`
+	Type          string   `avro:"type"`
 }
 
 // Service contains the necessary config for the company-search-consumer service
@@ -43,9 +42,9 @@ type Service struct {
 func (svc *Service) Start() {
 	log.Debug("svc", log.Data{"service": svc})
 
-	// avro := &avro.Schema{
-	// 	Definition: svc.Schema,
-	// }
+	avro := &avro.Schema{
+		Definition: svc.Schema,
+	}
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGTERM)
@@ -68,6 +67,43 @@ func (svc *Service) Start() {
 			log.Info("Begin consume")
 			if svc.InitialOffset == -1 {
 				svc.InitialOffset = event.Offset
+			}
+
+			var err error
+
+			if event.Offset >= svc.InitialOffset {
+
+				var mm messageMetadata
+				err = avro.Unmarshal(event.Value, &mm)
+				if err != nil {
+					log.ErrorC("Error unmarshalling avro", err, nil)
+					continue
+				}
+
+				log.Info("Unmarsheled the avro message")
+
+				// currently we only email - later switch on message type
+				// email := &email.Template{
+				// 	HTTPClient:         svc.HTTPClient,
+				// 	NotificationAPIURL: svc.NotificationAPIURL,
+				// }
+
+				// if err != nil {
+				// 	log.ErrorC("Error formatting message template data", err, nil)
+				// 	continue
+				// }
+
+				// log.Event("trace", "", log.Data{"messagetype": mm.MessageType, "appid": mm.AppID, "data": mm.Data})
+				// if err = email.SendViaAPI(mm.MessageType, mm.AppID, mm.Data); err != nil {
+				// 	log.ErrorC("Error calling Notification API", err, nil)
+				// 	continue
+				// }
+
+				svc.Consumer.MarkOffset(event, "")
+				if err := svc.Consumer.CommitOffsets(); err != nil {
+					log.ErrorC("Error commiting message offset", err, nil)
+					continue
+				}
 			}
 		}
 	}
