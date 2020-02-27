@@ -54,11 +54,11 @@ func main() {
 	}
 
 	svc := &service.Service{
-		Schema:             resourceChangedDataSchema,
-		NotificationAPIURL: "http://api.chs-dev.internal:4089/upsert",
-		HTTPClient:         http.DefaultClient,
-		Consumer:           consumer,
-		InitialOffset:      cfg.InitialOffset,
+		Schema:              resourceChangedDataSchema,
+		UpsertCompanyAPIUrl: "http://api.chs-dev.internal:4089/upsert-company",
+		HTTPClient:          http.DefaultClient,
+		Consumer:            consumer,
+		InitialOffset:       cfg.InitialOffset,
 	}
 
 	svc.Start()

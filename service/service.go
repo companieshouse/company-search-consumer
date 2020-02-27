@@ -10,6 +10,7 @@ import (
 	"github.com/companieshouse/chs.go/avro"
 	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"github.com/companieshouse/chs.go/log"
+	"github.com/companieshouse/company-search-consumer/upsert"
 )
 
 // messageMetadata represents resource change data json unmarshal
@@ -31,11 +32,11 @@ type Event struct {
 
 // Service contains the necessary config for the company-search-consumer service
 type Service struct {
-	HTTPClient         *http.Client
-	NotificationAPIURL string
-	Consumer           *consumer.GroupConsumer
-	InitialOffset      int64
-	Schema             string
+	HTTPClient          *http.Client
+	UpsertCompanyAPIUrl string
+	Consumer            *consumer.GroupConsumer
+	InitialOffset       int64
+	Schema              string
 }
 
 //Start is called to run the service
@@ -80,24 +81,21 @@ func (svc *Service) Start() {
 					continue
 				}
 
-				log.Info("Unmarsheled the avro message")
+				upsert := &upsert.Template{
+					HTTPClient:          svc.HTTPClient,
+					UpsertCompanyAPIUrl: svc.UpsertCompanyAPIUrl,
+				}
 
-				// currently we only email - later switch on message type
-				// email := &email.Template{
-				// 	HTTPClient:         svc.HTTPClient,
-				// 	NotificationAPIURL: svc.NotificationAPIURL,
-				// }
+				if err != nil {
+					log.ErrorC("Error formatting message template data", err, nil)
+					continue
+				}
 
-				// if err != nil {
-				// 	log.ErrorC("Error formatting message template data", err, nil)
-				// 	continue
-				// }
-
-				// log.Event("trace", "", log.Data{"messagetype": mm.MessageType, "appid": mm.AppID, "data": mm.Data})
-				// if err = email.SendViaAPI(mm.MessageType, mm.AppID, mm.Data); err != nil {
-				// 	log.ErrorC("Error calling Notification API", err, nil)
-				// 	continue
-				// }
+				log.Event("trace", "", log.Data{"data": mm.Data})
+				if err = upsert.SendViaAPI(mm.Data); err != nil {
+					log.ErrorC("Error calling upsert on the search api", err, nil)
+					continue
+				}
 
 				svc.Consumer.MarkOffset(event, "")
 				if err := svc.Consumer.CommitOffsets(); err != nil {
