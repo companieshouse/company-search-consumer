@@ -2,10 +2,14 @@ package main
 
 import (
 	"github.com/Shopify/sarama"
+	"github.com/companieshouse/chs.go/avro/schema"
 	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"github.com/companieshouse/chs.go/log"
 	"github.com/companieshouse/company-search-consumer/config"
+	"github.com/companieshouse/company-search-consumer/service"
 	gologger "log"
+	"net/http"
+	"os"
 )
 
 func main() {
@@ -41,5 +45,21 @@ func main() {
 		return
 	}
 
-	log.Debug("consumer has been successfully initialised")
+	log.Debug("Consumer has been successfully initialised")
+
+	resourceChangedDataSchema, err := schema.Get(cfg.SchemaRegistryURL, "resource-changed-data")
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+
+	svc := &service.Service{
+		Schema:              resourceChangedDataSchema,
+		UpsertCompanyAPIUrl: "http://api.chs-dev.internal:4089/upsert-company",
+		HTTPClient:          http.DefaultClient,
+		Consumer:            consumer,
+		InitialOffset:       cfg.InitialOffset,
+	}
+
+	svc.Start()
 }
