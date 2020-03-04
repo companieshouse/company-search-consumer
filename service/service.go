@@ -40,14 +40,13 @@ type Service struct {
 }
 
 //Start is called to run the service
-func (svc *Service) Start() {
+func (svc *Service) Start(c chan os.Signal) {
 	log.Debug("svc", log.Data{"service": svc})
 
 	avro := &avro.Schema{
 		Definition: svc.Schema,
 	}
 
-	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGTERM)
 
 	for {
@@ -99,7 +98,7 @@ func (svc *Service) Start() {
 
 				svc.Consumer.MarkOffset(event, "")
 				if err := svc.Consumer.CommitOffsets(); err != nil {
-					log.ErrorC("Error commiting message offset", err, nil)
+					log.ErrorC("Error committing message offset", err, nil)
 					continue
 				}
 			}

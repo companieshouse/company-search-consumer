@@ -61,5 +61,7 @@ func main() {
 		InitialOffset:       cfg.InitialOffset,
 	}
 
-	svc.Start()
+	mainChannel := make(chan os.Signal, 1)
+
+	svc.Start(mainChannel)
 }

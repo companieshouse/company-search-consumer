@@ -1,11 +1,11 @@
 package upsert
 
 import (
+	. "github.com/smartystreets/goconvey/convey"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"testing"
-	. "github.com/smartystreets/goconvey/convey"
 )
 
 func createMockClient(status int) *http.Client {
@@ -25,11 +25,11 @@ func TestIntegrationUpsert(t *testing.T) {
 	Convey("Test call to search.api.ch.gov.uk is successful when valid fields passed in", t, func() {
 		httpClient := createMockClient(200)
 
-		upsert := &Template {
+		upsert := &Template{
 			HTTPClient:          httpClient,
 			UpsertCompanyAPIUrl: "http://api.chs-dev.internal:4089/upsert-company",
 		}
-		
+
 		err := upsert.SendViaAPI("{'data' : '1' }")
 		So(err, ShouldBeNil)
 	})
