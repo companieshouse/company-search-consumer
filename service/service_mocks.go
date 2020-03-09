@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"github.com/Shopify/sarama"
 	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"reflect"
@@ -16,6 +17,8 @@ type MockConsumer struct{}
 type MockMarshaller struct{}
 
 type MockUpsert struct{}
+
+type MockUpsertFail struct{}
 
 type MockGroup struct{}
 
@@ -64,6 +67,19 @@ func (m MockMarshaller) Unmarshal(message []byte, s interface{}) error {
 	return nil
 }
 
-func (m MockUpsert) SendViaAPI(data string) error {
-	return nil
+func (m MockMarshaller) Marshal(s interface{}) ([]byte, error) {
+	return nil, nil
+}
+
+func (m MockUpsert) SendViaAPI(data string) (int, error) {
+	return 200, nil
+}
+
+func (m MockUpsertFail) SendViaAPI(data string) (int, error) {
+	return 400, errors.New("failed to send to api")
+}
+
+func getDefaultSchema() string {
+
+	return "{ \"type\": \"record\", \"name\": \"resource_changed_data\", \"namespace\": \"stream\", \"fields\": [ { \"name\": \"resource_kind\", \"type\": \"string\" }, { \"name\": \"resource_uri\", \"type\": \"string\" }, { \"name\": \"context_id\", \"type\": \"string\" }, { \"name\": \"resource_id\", \"type\": \"string\" }, { \"name\": \"data\", \"type\": \"string\" }, { \"name\": \"event\", \"type\": { \"type\": \"record\", \"name\": \"event_record\", \"fields\": [ { \"name\": \"published_at\", \"type\": \"string\", \"default\":\"\" }, { \"name\": \"type\", \"type\": \"string\", \"default\":\"\" }, { \"name\": \"fields_changed\", \"type\": [ \"null\", { \"type\": \"array\", \"items\": \"string\" } ] } ] } } ] }"
 }

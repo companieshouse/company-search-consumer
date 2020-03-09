@@ -2,11 +2,13 @@ package main
 
 import (
 	"github.com/Shopify/sarama"
+	"github.com/companieshouse/chs.go/avro"
 	"github.com/companieshouse/chs.go/avro/schema"
 	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"github.com/companieshouse/chs.go/log"
 	"github.com/companieshouse/company-search-consumer/config"
 	"github.com/companieshouse/company-search-consumer/service"
+	"github.com/companieshouse/company-search-consumer/upsert"
 	gologger "log"
 	"net/http"
 	"os"
@@ -53,12 +55,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	svc := &service.Service{
-		Schema:              resourceChangedDataSchema,
-		UpsertCompanyAPIUrl: "http://api.chs-dev.internal:4089/upsert-company",
+	avro := &avro.Schema{
+		Definition: resourceChangedDataSchema,
+	}
+
+	upsert := &upsert.Template{
 		HTTPClient:          http.DefaultClient,
-		Consumer:            consumer,
-		InitialOffset:       cfg.InitialOffset,
+		UpsertCompanyAPIUrl: "http://api.chs-dev.internal:4089/upsert-company",
+	}
+
+	svc := &service.Service{
+		Schema:        resourceChangedDataSchema,
+		Consumer:      consumer,
+		Marshaller:    avro,
+		Upsert:        upsert,
+		InitialOffset: cfg.InitialOffset,
 	}
 
 	mainChannel := make(chan os.Signal, 1)

@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -12,6 +11,9 @@ import (
 	"github.com/companieshouse/chs.go/log"
 	"github.com/companieshouse/company-search-consumer/upsert"
 )
+
+// Value required to unit test the consumer
+var testHttpResponseValue int
 
 // messageMetadata represents resource change data json unmarshal
 type messageMetadata struct {
@@ -32,20 +34,16 @@ type Event struct {
 
 // Service contains the necessary config for the company-search-consumer service
 type Service struct {
-	HTTPClient          *http.Client
-	UpsertCompanyAPIUrl string
-	Consumer            *consumer.GroupConsumer
-	InitialOffset       int64
-	Schema              string
+	Consumer      *consumer.GroupConsumer
+	Marshaller    avro.Marshaller
+	Upsert        upsert.Upsert
+	InitialOffset int64
+	Schema        string
 }
 
 //Start is called to run the service
 func (svc *Service) Start(c chan os.Signal) {
 	log.Debug("svc", log.Data{"service": svc})
-
-	avro := &avro.Schema{
-		Definition: svc.Schema,
-	}
 
 	signal.Notify(c, os.Interrupt, os.Kill, syscall.SIGTERM)
 
@@ -64,7 +62,7 @@ func (svc *Service) Start(c chan os.Signal) {
 			log.Error(err)
 
 		case event := <-svc.Consumer.Messages():
-			log.Info("Begin consume")
+
 			if svc.InitialOffset == -1 {
 				svc.InitialOffset = event.Offset
 			}
@@ -74,15 +72,10 @@ func (svc *Service) Start(c chan os.Signal) {
 			if event.Offset >= svc.InitialOffset {
 
 				var mm messageMetadata
-				err = avro.Unmarshal(event.Value, &mm)
+				err = svc.Marshaller.Unmarshal(event.Value, &mm)
 				if err != nil {
 					log.ErrorC("Error unmarshalling avro", err, nil)
 					continue
-				}
-
-				upsert := &upsert.Template{
-					HTTPClient:          svc.HTTPClient,
-					UpsertCompanyAPIUrl: svc.UpsertCompanyAPIUrl,
 				}
 
 				if err != nil {
@@ -91,7 +84,9 @@ func (svc *Service) Start(c chan os.Signal) {
 				}
 
 				log.Event("trace", "", log.Data{"data": mm.Data})
-				if err = upsert.SendViaAPI(mm.Data); err != nil {
+				statusCode, err := svc.Upsert.SendViaAPI(mm.Data)
+				testHttpResponseValue = statusCode
+				if err != nil {
 					log.ErrorC("Error calling upsert on the search api", err, nil)
 					continue
 				}
