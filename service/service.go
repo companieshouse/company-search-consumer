@@ -61,29 +61,23 @@ func (svc *Service) Start(c chan os.Signal) {
 		case err := <-svc.Consumer.Errors():
 			log.Error(err)
 
-		case event := <-svc.Consumer.Messages():
+		case message := <-svc.Consumer.Messages():
 
 			if svc.InitialOffset == -1 {
-				svc.InitialOffset = event.Offset
+				svc.InitialOffset = message.Offset
 			}
 
 			var err error
 
-			if event.Offset >= svc.InitialOffset {
+			if message.Offset >= svc.InitialOffset {
 
 				var mm messageMetadata
-				err = svc.Marshaller.Unmarshal(event.Value, &mm)
+				err = svc.Marshaller.Unmarshal(message.Value, &mm)
 				if err != nil {
 					log.ErrorC("Error unmarshalling avro", err, nil)
 					continue
 				}
 
-				if err != nil {
-					log.ErrorC("Error formatting message template data", err, nil)
-					continue
-				}
-
-				log.Event("trace", "", log.Data{"data": mm.Data})
 				statusCode, err := svc.Upsert.SendViaAPI(mm.Data)
 				testHttpResponseValue = statusCode
 				if err != nil {
@@ -91,9 +85,10 @@ func (svc *Service) Start(c chan os.Signal) {
 					continue
 				}
 
-				svc.Consumer.MarkOffset(event, "")
+				log.Trace("Committing message", log.Data{"offset": message.Offset})
+				svc.Consumer.MarkOffset(message, "")
 				if err := svc.Consumer.CommitOffsets(); err != nil {
-					log.ErrorC("Error committing message offset", err, nil)
+					log.ErrorC("Error committing message offset", err, log.Data{"offset": message.Offset})
 					continue
 				}
 			}

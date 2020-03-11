@@ -17,6 +17,7 @@ type Config struct {
 	ZookeeperChroot           string      `env:"KAFKA_ZOOKEEPER_CHROOT"              flag:"zookeeper-chroot"                    flagDesc:"Zookeeper chroot"`
 	InitialOffset             int64       `env:"INITIAL_OFFSET"                      flag:"initial-offset"                      flagDesc:"Initial offset for consumer group"`
 	LogTopic                  string      `env:"LOG_TOPIC"                           flag:"log-topic"                           flagDesc:"Log topic"`
+	UpsertURL                 string      `env:"UPSERT_URL"                          flag:"upsert-url"                          flagDesc:"Url for upserting a company"`
 }
 
 var cfg *Config

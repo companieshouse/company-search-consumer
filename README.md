@@ -1,5 +1,5 @@
 # company-search-consumer
-A service that consumes messages from the stream-company-profile topic and then sends a RESTful POST request to the search.api.ch.gov.uk service. The data sent through the POST request will be used in search.api.ch.gov.uk to maintain and update elastic search indexes relating to company search.
+A service that consumes messages from the stream-company-profile topic. The messages are then unmarhsalled and a RESTful request is sent to an external API with the intention of adding or updating documents present in an elastic search index.
 
 Requirements
 =============

@@ -59,9 +59,9 @@ func main() {
 		Definition: resourceChangedDataSchema,
 	}
 
-	upsert := &upsert.Template{
+	upsert := &upsert.APIUpsert{
 		HTTPClient:          http.DefaultClient,
-		UpsertCompanyAPIUrl: "http://api.chs-dev.internal:4089/upsert-company",
+		UpsertCompanyAPIUrl: cfg.UpsertURL,
 	}
 
 	svc := &service.Service{
