@@ -27,7 +27,7 @@ type APIUpsert struct {
 // the required data for upserting to alpha_search index
 func (upsert *APIUpsert) SendViaAPI(data string) error {
 
-	req, err := http.NewRequest("POST", upsert.UpsertCompanyAPIUrl, strings.NewReader(data))
+	req, err := http.NewRequest("PUT", upsert.UpsertCompanyAPIUrl, strings.NewReader(data))
 	if err != nil {
 		return err
 	}
