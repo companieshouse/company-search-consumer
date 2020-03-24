@@ -2,18 +2,14 @@ package service
 
 import (
 	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
-
 	"github.com/companieshouse/chs.go/avro"
 	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"github.com/companieshouse/chs.go/log"
 	"github.com/companieshouse/company-search-consumer/upsert"
+	"os"
+	"os/signal"
+	"syscall"
 )
-
-// Value required to unit test the consumer
-var testHttpResponseValue int
 
 // messageMetadata represents resource change data json unmarshal
 type messageMetadata struct {
@@ -37,6 +33,7 @@ type Service struct {
 	Consumer      *consumer.GroupConsumer
 	Marshaller    avro.Marshaller
 	Upsert        upsert.Upsert
+	HandleError   func(err error, offset int64, str interface{}) error
 	InitialOffset int64
 	Schema        string
 }
@@ -67,21 +64,18 @@ func (svc *Service) Start(c chan os.Signal) {
 				svc.InitialOffset = message.Offset
 			}
 
-			var err error
-
 			if message.Offset >= svc.InitialOffset {
 
 				var mm messageMetadata
-				err = svc.Marshaller.Unmarshal(message.Value, &mm)
-				if err != nil {
+				if err := svc.Marshaller.Unmarshal(message.Value, &mm); err != nil {
 					log.ErrorC("Error unmarshalling avro", err, nil)
+					svc.HandleError(err, message.Offset, &message.Value)
 					continue
 				}
 
-				statusCode, err := svc.Upsert.SendViaAPI(mm.Data)
-				testHttpResponseValue = statusCode
-				if err != nil {
+				if err := svc.Upsert.SendViaAPI(mm.Data); err != nil {
 					log.ErrorC("Error calling upsert on the search api", err, nil)
+					svc.HandleError(err, message.Offset, &mm)
 					continue
 				}
 
@@ -89,6 +83,7 @@ func (svc *Service) Start(c chan os.Signal) {
 				svc.Consumer.MarkOffset(message, "")
 				if err := svc.Consumer.CommitOffsets(); err != nil {
 					log.ErrorC("Error committing message offset", err, log.Data{"offset": message.Offset})
+					svc.HandleError(err, message.Offset, &mm)
 					continue
 				}
 			}

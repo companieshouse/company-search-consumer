@@ -5,6 +5,8 @@ import (
 	"github.com/companieshouse/chs.go/avro"
 	"github.com/companieshouse/chs.go/avro/schema"
 	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
+	"github.com/companieshouse/chs.go/kafka/producer"
+	"github.com/companieshouse/chs.go/kafka/resilience"
 	"github.com/companieshouse/chs.go/log"
 	"github.com/companieshouse/company-search-consumer/config"
 	"github.com/companieshouse/company-search-consumer/service"
@@ -12,6 +14,7 @@ import (
 	gologger "log"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
@@ -27,6 +30,23 @@ func main() {
 	if cfg.InitialOffset != -1 {
 		resetOffset = true
 	}
+
+	resourceChangedDataSchema, err := schema.Get(cfg.SchemaRegistryURL, "resource-changed-data")
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+
+	p, err := producer.New(&producer.Config{Acks: &producer.WaitForAll, BrokerAddrs: cfg.StreamingBrokerAddr})
+
+	retry := &resilience.ServiceRetry{
+		time.Duration(cfg.RetryThrottleRate),
+		cfg.MaxRetryAttempts,
+	}
+
+	ppSchema, err := schema.Get(cfg.SchemaRegistryURL, resourceChangedDataSchema)
+
+	rh := resilience.NewHandler(cfg.StreamCompanyProfileTopic, "consumer", retry, p, &avro.Schema{Definition: ppSchema})
 
 	consumerConfig := &consumer.Config{
 		Topics:       []string{cfg.StreamCompanyProfileTopic},
@@ -49,12 +69,6 @@ func main() {
 
 	log.Debug("Consumer has been successfully initialised")
 
-	resourceChangedDataSchema, err := schema.Get(cfg.SchemaRegistryURL, "resource-changed-data")
-	if err != nil {
-		log.Error(err)
-		os.Exit(1)
-	}
-
 	avro := &avro.Schema{
 		Definition: resourceChangedDataSchema,
 	}
@@ -68,11 +82,11 @@ func main() {
 		Schema:        resourceChangedDataSchema,
 		Consumer:      consumer,
 		Marshaller:    avro,
+		HandleError:   rh.HandleError,
 		Upsert:        upsert,
 		InitialOffset: cfg.InitialOffset,
 	}
 
 	mainChannel := make(chan os.Signal, 1)
-
 	svc.Start(mainChannel)
 }
