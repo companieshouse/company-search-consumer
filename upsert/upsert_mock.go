@@ -4,8 +4,9 @@
 package upsert
 
 import (
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockUpsert is a mock of Upsert interface

@@ -2,10 +2,12 @@ package service
 
 import (
 	"fmt"
+
 	"github.com/companieshouse/chs.go/avro"
-	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
+	consumer "github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"github.com/companieshouse/chs.go/log"
 	"github.com/companieshouse/company-search-consumer/upsert"
+
 	"os"
 	"os/signal"
 	"syscall"

@@ -2,12 +2,14 @@ package service
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/Shopify/sarama"
-	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
+	consumer "github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"github.com/companieshouse/company-search-consumer/upsert"
 	"github.com/golang/mock/gomock"
 	. "github.com/smartystreets/goconvey/convey"
-	"os"
+
 	"reflect"
 	"testing"
 	"time"

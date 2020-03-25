@@ -1,9 +1,10 @@
 package config
 
 import (
+	"os"
+
 	"github.com/companieshouse/chs.go/log"
 	"github.com/companieshouse/gofigure"
-	"os"
 )
 
 // Config is the company-search-consumer config

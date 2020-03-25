@@ -1,10 +1,12 @@
 package upsert
 
 import (
-	. "github.com/smartystreets/goconvey/convey"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+
+	. "github.com/smartystreets/goconvey/convey"
+
 	"testing"
 )
 
