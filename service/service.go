@@ -4,6 +4,7 @@ package service
 import (
 	"fmt"
 
+	event "github.com/companieshouse/chs-go-avro-schemas/common"
 	"github.com/companieshouse/chs.go/avro"
 	consumer "github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"github.com/companieshouse/chs.go/log"
@@ -16,19 +17,12 @@ import (
 
 // messageMetadata represents resource change data json unmarshal
 type messageMetadata struct {
-	ResourceKind string `avro:"resource_kind"`
-	ResourceURI  string `avro:"resource_uri"`
-	ContextID    string `avro:"context_id"`
-	ResourceID   string `avro:"resource_id"`
-	Data         string `avro:"data"`
-	Event        Event  `avro:"event"`
-}
-
-// Event - resource changed data event
-type Event struct {
-	FieldsChanged []string `avro:"fields_changed,omitempty"`
-	PublishedAt   string   `avro:"published_at"`
-	Type          string   `avro:"type"`
+	ResourceKind string            `avro:"resource_kind"`
+	ResourceURI  string            `avro:"resource_uri"`
+	ContextID    string            `avro:"context_id"`
+	ResourceID   string            `avro:"resource_id"`
+	Data         string            `avro:"data"`
+	Event        event.EventRecord `avro:"event"`
 }
 
 // Service contains the necessary config for the company-search-consumer service
