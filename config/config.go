@@ -21,7 +21,7 @@ type Config struct {
 	LogTopic                  string      `env:"LOG_TOPIC"                           flag:"log-topic"                           flagDesc:"Log topic"`
 	UpsertURL                 string      `env:"UPSERT_URL"                          flag:"upsert-url"                          flagDesc:"Url for upserting a company"`
 	RetryThrottleRate         int         `env:"RETRY_THROTTLE_RATE_SECONDS"         flag:"retry-throttle-rate-seconds"         flagDesc:"Retry throttle rate seconds"`
-	MaxRetryAttempts          int         `env:"MAXIMUM_RETRY_ATTEMPTS"              flag:"max-retry-attemps"                   flagDesc:"Maximum retry attempts"`
+	MaxRetryAttempts          int         `env:"MAXIMUM_RETRY_ATTEMPTS"              flag:"max-retry-attempts"                   flagDesc:"Maximum retry attempts"`
 }
 
 var cfg *Config
