@@ -1,0 +1,17 @@
+# Build artifacts
+company-search-consumer
+company-search-consumer-*.zip
+build.log
+
+# Test output
+test.xml
+
+# Lint output
+lint.txt
+
+# GoLand files
+.idea/
+
+# Mac files
+.DS_Store
+._*

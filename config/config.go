@@ -1,3 +1,4 @@
+// Package config defines the environment variable and command-line flags
 package config
 
 import (

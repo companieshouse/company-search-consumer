@@ -1,20 +1,21 @@
 package main
 
 import (
+	gologger "log"
+	"net/http"
+	"os"
+	"time"
+
 	"github.com/Shopify/sarama"
 	"github.com/companieshouse/chs.go/avro"
 	"github.com/companieshouse/chs.go/avro/schema"
-	"github.com/companieshouse/chs.go/kafka/consumer/cluster"
+	consumer "github.com/companieshouse/chs.go/kafka/consumer/cluster"
 	"github.com/companieshouse/chs.go/kafka/producer"
 	"github.com/companieshouse/chs.go/kafka/resilience"
 	"github.com/companieshouse/chs.go/log"
 	"github.com/companieshouse/company-search-consumer/config"
 	"github.com/companieshouse/company-search-consumer/service"
 	"github.com/companieshouse/company-search-consumer/upsert"
-	gologger "log"
-	"net/http"
-	"os"
-	"time"
 )
 
 func main() {
@@ -38,13 +39,20 @@ func main() {
 	}
 
 	p, err := producer.New(&producer.Config{Acks: &producer.WaitForAll, BrokerAddrs: cfg.StreamingBrokerAddr})
+	if err != nil {
+		log.Error(err)
+		return
+	}
 
 	retry := &resilience.ServiceRetry{
-		time.Duration(cfg.RetryThrottleRate),
-		cfg.MaxRetryAttempts,
+		ThrottleRate: time.Duration(cfg.RetryThrottleRate),
+		MaxRetries:   cfg.MaxRetryAttempts,
 	}
 
 	ppSchema, err := schema.Get(cfg.SchemaRegistryURL, resourceChangedDataSchema)
+	if err != nil {
+		log.Error(err)
+	}
 
 	rh := resilience.NewHandler(cfg.StreamCompanyProfileTopic, "consumer", retry, p, &avro.Schema{Definition: ppSchema})
 
@@ -69,11 +77,11 @@ func main() {
 
 	log.Debug("Consumer has been successfully initialised")
 
-	avro := &avro.Schema{
+	avroSchema := &avro.Schema{
 		Definition: resourceChangedDataSchema,
 	}
 
-	upsert := &upsert.APIUpsert{
+	apiUpsert := &upsert.APIUpsert{
 		HTTPClient:          http.DefaultClient,
 		UpsertCompanyAPIUrl: cfg.UpsertURL,
 	}
@@ -81,9 +89,9 @@ func main() {
 	svc := &service.Service{
 		Schema:        resourceChangedDataSchema,
 		Consumer:      consumer,
-		Marshaller:    avro,
+		Marshaller:    avroSchema,
 		HandleError:   rh.HandleError,
-		Upsert:        upsert,
+		Upsert:        apiUpsert,
 		InitialOffset: cfg.InitialOffset,
 	}
 

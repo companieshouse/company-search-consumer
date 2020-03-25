@@ -1,3 +1,4 @@
+// Package upsert contains the logic to send the upsert request to the API
 package upsert
 
 import (
@@ -7,13 +8,13 @@ import (
 )
 
 var (
-	//ErrInvalidResponse is returned when the Search API returns a non 200 status
+	// ErrInvalidResponse is returned when the Search API returns a non 200 status
 	ErrInvalidResponse = errors.New("invalid status returned by search.api.ch.gov.uk")
 )
 
-// Interface for calling api to upsert data to an elastic search index
+// Upsert is an interface for calling api to upsert data to an elastic search index
 type Upsert interface {
-	// SendViaApi provides ability to post to search api
+	// SendViaAPI provides ability to post to search api
 	SendViaAPI(data string) error
 }
 
@@ -38,8 +39,10 @@ func (upsert *APIUpsert) SendViaAPI(data string) error {
 	if err != nil {
 		return err
 	}
-	resp.Body.Close()
-	if resp.StatusCode != 200 {
+	if err := resp.Body.Close(); err != nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusOK {
 		return ErrInvalidResponse
 	}
 	return nil

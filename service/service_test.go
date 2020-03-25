@@ -36,16 +36,6 @@ func createMockServiceErrorUnmarshalling(mockUpsert *upsert.MockUpsert) *Service
 	}
 }
 
-func createMockServiceErrorCommitting(mockUpsert *upsert.MockUpsert) *Service {
-	return &Service{
-		InitialOffset: int64(-1),
-		Schema:        getDefaultData(),
-		Upsert:        mockUpsert,
-		Marshaller:    MockErrorMarshaller{},
-		HandleError:   MockHandleError,
-	}
-}
-
 func getDefaultData() string {
 	return "data"
 }
@@ -58,7 +48,7 @@ func MockHandleError(err error, offset int64, str interface{}) error {
 }
 
 const resourceKind = "resourceKind"
-const resourceUri = "resourceUri"
+const resourceUri = "resourceURI"
 const contextID = "contextID"
 const resourceID = "resourceID"
 
