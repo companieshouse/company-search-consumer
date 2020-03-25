@@ -5,7 +5,7 @@ go 1.12
 require (
 	github.com/Shopify/sarama v1.24.1
 	github.com/companieshouse/chs-go-avro-schemas v0.1.0
-	github.com/companieshouse/chs.go v1.1.4
+	github.com/companieshouse/chs.go v1.1.5
 	github.com/companieshouse/envconf v0.1.3 // indirect
 	github.com/companieshouse/gofigure v0.1.3
 	github.com/golang/mock v1.4.3
@@ -16,5 +16,3 @@ require (
 	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59 // indirect
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e // indirect
 )
-
-replace github.com/companieshouse/chs.go => /home/vagrant/go/src/github.com/companieshouse/chs.go
