@@ -48,7 +48,7 @@ func MockHandleError(err error, offset int64, str interface{}) error {
 }
 
 const resourceKind = "resourceKind"
-const resourceUri = "resourceURI"
+const resourceURI = "resourceURI"
 const contextID = "contextID"
 const resourceID = "resourceID"
 
@@ -58,7 +58,7 @@ type MockMarshaller struct{}
 func (m MockMarshaller) Unmarshal(message []byte, s interface{}) error {
 
 	reflect.ValueOf(s).Elem().Field(0).SetString("resourceKind")
-	reflect.ValueOf(s).Elem().Field(1).SetString("resourceUri")
+	reflect.ValueOf(s).Elem().Field(1).SetString("resourceURI")
 	reflect.ValueOf(s).Elem().Field(2).SetString("contextId")
 	reflect.ValueOf(s).Elem().Field(3).SetString("resourceId")
 	reflect.ValueOf(s).Elem().Field(4).SetString(getDefaultData())
@@ -110,7 +110,7 @@ func (m MockConsumer) Messages() <-chan *sarama.ConsumerMessage {
 
 	go func() {
 		out <- &sarama.ConsumerMessage{
-			Value: []byte("\"" + resourceKind + "\"" + resourceUri + "\"" + contextID + "\"" + resourceID + "\""),
+			Value: []byte("\"" + resourceKind + "\"" + resourceURI + "\"" + contextID + "\"" + resourceID + "\""),
 		}
 		close(out)
 	}()
