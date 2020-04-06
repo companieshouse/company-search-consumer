@@ -15,7 +15,7 @@ var (
 // Upsert is an interface for calling api to upsert data to an elastic search index
 type Upsert interface {
 	// SendViaAPI provides ability to post to search api
-	SendViaAPI(data string) error
+	SendViaAPI(data string, apiKey string) error
 }
 
 // Template config contains recipient address, http client and send email endpoint
@@ -26,7 +26,7 @@ type APIUpsert struct {
 
 // SendViaAPI makes a call to the search.api.ch.gov.uk and passes it
 // the required data for upserting to alpha_search index
-func (upsert *APIUpsert) SendViaAPI(data string) error {
+func (upsert *APIUpsert) SendViaAPI(data string, apiKey string) error {
 
 	req, err := http.NewRequest("PUT", upsert.UpsertCompanyAPIUrl, strings.NewReader(data))
 	if err != nil {
@@ -34,6 +34,7 @@ func (upsert *APIUpsert) SendViaAPI(data string) error {
 	}
 
 	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Authorization", apiKey)
 
 	resp, err := upsert.HTTPClient.Do(req)
 	if err != nil {
