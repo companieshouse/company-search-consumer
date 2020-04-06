@@ -32,7 +32,7 @@ func TestUnitUpsert(t *testing.T) {
 			UpsertCompanyAPIUrl: "http://api.chs-dev.internal:4089/upsert-company",
 		}
 
-		err := upsert.SendViaAPI("{'data' : '1' }")
+		err := upsert.SendViaAPI("{'data' : '1' }", "testAPIKey")
 		So(err, ShouldBeNil)
 	})
 
@@ -43,7 +43,7 @@ func TestUnitUpsert(t *testing.T) {
 			HTTPClient:          httpClient,
 			UpsertCompanyAPIUrl: "http://invalid-url",
 		}
-		err := upsert.SendViaAPI("{'data' : '1' }")
+		err := upsert.SendViaAPI("{'data' : '1' }", "testAPIKey")
 		So(err, ShouldEqual, ErrInvalidResponse)
 	})
 
@@ -54,7 +54,7 @@ func TestUnitUpsert(t *testing.T) {
 			HTTPClient:          httpClient,
 			UpsertCompanyAPIUrl: "invalid-url",
 		}
-		err := upsert.SendViaAPI("{ 'data' : '1' }")
+		err := upsert.SendViaAPI("{ 'data' : '1' }", "testAPIKey")
 		So(err, ShouldNotBeNil)
 	})
 }

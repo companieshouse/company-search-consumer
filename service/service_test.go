@@ -23,6 +23,7 @@ func createMockService(mockUpsert *upsert.MockUpsert) *Service {
 		Upsert:        mockUpsert,
 		Marshaller:    MockMarshaller{},
 		HandleError:   MockHandleError,
+		CHSAPIKey:     "testAPIKey",
 	}
 }
 
@@ -33,6 +34,7 @@ func createMockServiceErrorUnmarshalling(mockUpsert *upsert.MockUpsert) *Service
 		Upsert:        mockUpsert,
 		Marshaller:    MockErrorMarshaller{},
 		HandleError:   MockHandleError,
+		CHSAPIKey:     "testAPIKey",
 	}
 }
 
