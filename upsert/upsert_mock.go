@@ -33,7 +33,7 @@ func (m *MockUpsert) EXPECT() *MockUpsertMockRecorder {
 }
 
 // SendViaAPI mocks base method
-func (m *MockUpsert) SendViaAPI(data string) error {
+func (m *MockUpsert) SendViaAPI(data string, apiKey string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SendViaAPI", data)
 	ret0, _ := ret[0].(error)

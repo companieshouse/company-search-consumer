@@ -93,6 +93,7 @@ func main() {
 		HandleError:   rh.HandleError,
 		Upsert:        apiUpsert,
 		InitialOffset: cfg.InitialOffset,
+		CHSAPIKey:     cfg.CHSAPIKey,
 	}
 
 	mainChannel := make(chan os.Signal, 1)

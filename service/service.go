@@ -33,6 +33,7 @@ type Service struct {
 	HandleError   func(err error, offset int64, str interface{}) error
 	InitialOffset int64
 	Schema        string
+	CHSAPIKey     string
 }
 
 // Start is called to run the service
@@ -72,7 +73,7 @@ func (svc *Service) Start(c chan os.Signal) {
 					continue
 				}
 
-				if err := svc.Upsert.SendViaAPI(mm.Data); err != nil {
+				if err := svc.Upsert.SendViaAPI(mm.Data, svc.CHSAPIKey); err != nil {
 					log.ErrorC("Error calling upsert on the search api", err, nil)
 					if err = svc.HandleError(err, message.Offset, &mm); err != nil {
 						log.ErrorC("Error handling upserting error, kafka message will not be retried", err, nil)
