@@ -2,6 +2,7 @@
 package upsert
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strings"
@@ -24,9 +25,18 @@ type APIUpsert struct {
 	UpsertCompanyAPIUrl string
 }
 
+// Company profile delta data json contains fields such as company_number
+type CompanyProfileDelta struct {
+	CompanyNumber string `json:"company_number"`
+}
+
 // SendViaAPI makes a call to the search.api.ch.gov.uk and passes it
 // the required data for upserting to alpha_search index
 func (upsert *APIUpsert) SendViaAPI(data string, apiKey string) error {
+
+	companyProfileDelta := CompanyProfileDelta{}
+	json.Unmarshal([]byte(data), &companyProfileDelta)
+	upsert.UpsertCompanyAPIUrl += companyProfileDelta.CompanyNumber
 
 	req, err := http.NewRequest("PUT", upsert.UpsertCompanyAPIUrl, strings.NewReader(data))
 	if err != nil {
