@@ -36,9 +36,8 @@ func (upsert *APIUpsert) SendViaAPI(data string, apiKey string) error {
 
 	companyProfileDelta := CompanyProfileDelta{}
 	json.Unmarshal([]byte(data), &companyProfileDelta)
-	upsert.UpsertCompanyAPIUrl += companyProfileDelta.CompanyNumber
 
-	req, err := http.NewRequest("PUT", upsert.UpsertCompanyAPIUrl, strings.NewReader(data))
+	req, err := http.NewRequest("PUT", upsert.UpsertCompanyAPIUrl+companyProfileDelta.CompanyNumber, strings.NewReader(data))
 	if err != nil {
 		return err
 	}
