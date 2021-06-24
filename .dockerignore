@@ -1,0 +1,8 @@
+*
+
+!config
+!service
+!upsert
+!go.mod
+!go.sum
+!main.go
