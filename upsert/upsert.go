@@ -21,8 +21,9 @@ type Upsert interface {
 
 // Template config contains recipient address, http client and send email endpoint
 type APIUpsert struct {
-	HTTPClient          *http.Client
-	UpsertCompanyAPIUrl string
+	HTTPClient                      *http.Client
+	AlphabeticalUpsertCompanyAPIUrl string
+	AdvancedUpsertCompanyAPIUrl     string
 }
 
 // Company profile delta data json contains fields such as company_number
@@ -37,22 +38,39 @@ func (upsert *APIUpsert) SendViaAPI(data string, apiKey string) error {
 	companyProfileDelta := CompanyProfileDelta{}
 	json.Unmarshal([]byte(data), &companyProfileDelta)
 
-	req, err := http.NewRequest("PUT", upsert.UpsertCompanyAPIUrl+companyProfileDelta.CompanyNumber, strings.NewReader(data))
+	alphabeticalRequest, err := http.NewRequest("PUT", upsert.AlphabeticalUpsertCompanyAPIUrl+companyProfileDelta.CompanyNumber, strings.NewReader(data))
+	if err != nil {
+		return err
+	}
+	advancedRequest, err := http.NewRequest("PUT", upsert.AdvancedUpsertCompanyAPIUrl+companyProfileDelta.CompanyNumber, strings.NewReader(data))
 	if err != nil {
 		return err
 	}
 
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", apiKey)
+	alphabeticalRequest.Header.Add("Content-Type", "application/json")
+	advancedRequest.Header.Add("Content-Type", "application/json")
+	alphabeticalRequest.Header.Add("Authorization", apiKey)
+	advancedRequest.Header.Add("Authorization", apiKey)
 
-	resp, err := upsert.HTTPClient.Do(req)
+	alphabeticalResponse, err := upsert.HTTPClient.Do(alphabeticalRequest)
 	if err != nil {
 		return err
 	}
-	if err := resp.Body.Close(); err != nil {
+	if err := alphabeticalResponse.Body.Close(); err != nil {
 		return err
 	}
-	if resp.StatusCode != http.StatusOK {
+	if alphabeticalResponse.StatusCode != http.StatusOK {
+		return ErrInvalidResponse
+	}
+
+	advancedResponse, err := upsert.HTTPClient.Do(advancedRequest)
+	if err != nil {
+		return err
+	}
+	if err := advancedResponse.Body.Close(); err != nil {
+		return err
+	}
+	if advancedResponse.StatusCode != http.StatusOK {
 		return ErrInvalidResponse
 	}
 	return nil
