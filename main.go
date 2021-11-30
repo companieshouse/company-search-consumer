@@ -82,9 +82,9 @@ func main() {
 	}
 
 	apiUpsert := &upsert.APIUpsert{
-		HTTPClient:          http.DefaultClient,
+		HTTPClient:                      http.DefaultClient,
 		AlphabeticalUpsertCompanyAPIUrl: cfg.AlphabeticalUpsertURL,
-		AdvancedUpsertCompanyAPIUrl: cfg.AdvancedUpsertURL,
+		AdvancedUpsertCompanyAPIUrl:     cfg.AdvancedUpsertURL,
 	}
 
 	svc := &service.Service{

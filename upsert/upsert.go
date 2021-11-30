@@ -4,6 +4,7 @@ package upsert
 import (
 	"encoding/json"
 	"errors"
+	"github.com/companieshouse/chs.go/log"
 	"net/http"
 	"strings"
 )
@@ -52,6 +53,7 @@ func (upsert *APIUpsert) SendViaAPI(data string, apiKey string) error {
 	alphabeticalRequest.Header.Add("Authorization", apiKey)
 	advancedRequest.Header.Add("Authorization", apiKey)
 
+	log.Info("Attemting to upsert company " + companyProfileDelta.CompanyNumber + " to alphabetical index")
 	alphabeticalResponse, err := upsert.HTTPClient.Do(alphabeticalRequest)
 	if err != nil {
 		return err
@@ -62,7 +64,9 @@ func (upsert *APIUpsert) SendViaAPI(data string, apiKey string) error {
 	if alphabeticalResponse.StatusCode != http.StatusOK {
 		return ErrInvalidResponse
 	}
+	log.Info("Upsert company " + companyProfileDelta.CompanyNumber + " to alphabetical index successful")
 
+	log.Info("Attemting to upsert company " + companyProfileDelta.CompanyNumber + " to advanced index")
 	advancedResponse, err := upsert.HTTPClient.Do(advancedRequest)
 	if err != nil {
 		return err
@@ -73,5 +77,6 @@ func (upsert *APIUpsert) SendViaAPI(data string, apiKey string) error {
 	if advancedResponse.StatusCode != http.StatusOK {
 		return ErrInvalidResponse
 	}
+	log.Info("Upsert company " + companyProfileDelta.CompanyNumber + " to advanced index successful")
 	return nil
 }

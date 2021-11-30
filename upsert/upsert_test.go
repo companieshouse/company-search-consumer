@@ -49,39 +49,39 @@ func TestUnitUpsert(t *testing.T) {
 		So(err, ShouldEqual, ErrInvalidResponse)
 	})
 
-    Convey("Test call to search.api.ch.gov.uk returns error when invalid url is passed in advanced", t, func() {
-        httpClient := createMockClient(500)
+	Convey("Test call to search.api.ch.gov.uk returns error when invalid url is passed in advanced", t, func() {
+		httpClient := createMockClient(500)
 
-        upsert := &APIUpsert{
-            HTTPClient:                      httpClient,
-            AlphabeticalUpsertCompanyAPIUrl: "http://api.chs-dev.internal:4089/alphabetical-search/companies/",
-            AdvancedUpsertCompanyAPIUrl:     "http://invalid-url",
-        }
-        err := upsert.SendViaAPI("{'data' : '1' }", "testAPIKey")
-        So(err, ShouldEqual, ErrInvalidResponse)
-    })
+		upsert := &APIUpsert{
+			HTTPClient:                      httpClient,
+			AlphabeticalUpsertCompanyAPIUrl: "http://api.chs-dev.internal:4089/alphabetical-search/companies/",
+			AdvancedUpsertCompanyAPIUrl:     "http://invalid-url",
+		}
+		err := upsert.SendViaAPI("{'data' : '1' }", "testAPIKey")
+		So(err, ShouldEqual, ErrInvalidResponse)
+	})
 
-    Convey("Test search.api.ch.gov.uk returns error when no protocol in front of url alphabetical", t, func() {
-        httpClient := createMockClient(500)
+	Convey("Test search.api.ch.gov.uk returns error when no protocol in front of url alphabetical", t, func() {
+		httpClient := createMockClient(500)
 
-        upsert := &APIUpsert{
-            HTTPClient:                      httpClient,
-            AlphabeticalUpsertCompanyAPIUrl: "invalid-url",
-            AdvancedUpsertCompanyAPIUrl:     "http://api.chs-dev.internal:4089/advanced-search/companies/",
-        }
-        err := upsert.SendViaAPI("{ 'data' : '1' }", "testAPIKey")
-        So(err, ShouldNotBeNil)
-    })
+		upsert := &APIUpsert{
+			HTTPClient:                      httpClient,
+			AlphabeticalUpsertCompanyAPIUrl: "invalid-url",
+			AdvancedUpsertCompanyAPIUrl:     "http://api.chs-dev.internal:4089/advanced-search/companies/",
+		}
+		err := upsert.SendViaAPI("{ 'data' : '1' }", "testAPIKey")
+		So(err, ShouldNotBeNil)
+	})
 
-    Convey("Test search.api.ch.gov.uk returns error when no protocol in front of url advanced", t, func() {
-        httpClient := createMockClient(500)
+	Convey("Test search.api.ch.gov.uk returns error when no protocol in front of url advanced", t, func() {
+		httpClient := createMockClient(500)
 
-        upsert := &APIUpsert{
-            HTTPClient:                      httpClient,
-            AlphabeticalUpsertCompanyAPIUrl: "http://api.chs-dev.internal:4089/alphabetical-search/companies/",
-            AdvancedUpsertCompanyAPIUrl:     "invalid-url",
-        }
-        err := upsert.SendViaAPI("{ 'data' : '1' }", "testAPIKey")
-        So(err, ShouldNotBeNil)
-    })
+		upsert := &APIUpsert{
+			HTTPClient:                      httpClient,
+			AlphabeticalUpsertCompanyAPIUrl: "http://api.chs-dev.internal:4089/alphabetical-search/companies/",
+			AdvancedUpsertCompanyAPIUrl:     "invalid-url",
+		}
+		err := upsert.SendViaAPI("{ 'data' : '1' }", "testAPIKey")
+		So(err, ShouldNotBeNil)
+	})
 }
