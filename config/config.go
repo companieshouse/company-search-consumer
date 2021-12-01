@@ -19,7 +19,8 @@ type Config struct {
 	ZookeeperChroot           string      `env:"KAFKA_ZOOKEEPER_CHROOT"              flag:"zookeeper-chroot"                    flagDesc:"Zookeeper chroot"`
 	InitialOffset             int64       `env:"INITIAL_OFFSET"                      flag:"initial-offset"                      flagDesc:"Initial offset for consumer group"`
 	LogTopic                  string      `env:"LOG_TOPIC"                           flag:"log-topic"                           flagDesc:"Log topic"`
-	UpsertURL                 string      `env:"UPSERT_URL"                          flag:"upsert-url"                          flagDesc:"Url for upserting a company"`
+	AlphabeticalUpsertURL     string      `env:"ALPHABETICAL_UPSERT_URL"             flag:"alphabetical-upsert-url"             flagDesc:"Url for upserting a company to the alphabetical index"`
+	AdvancedUpsertURL         string      `env:"ADVANCED_UPSERT_URL"                 flag:"advanced-upsert-url"                 flagDesc:"Url for upserting a company to the advanced index"`
 	RetryThrottleRate         int         `env:"RETRY_THROTTLE_RATE_SECONDS"         flag:"retry-throttle-rate-seconds"         flagDesc:"Retry throttle rate seconds"`
 	MaxRetryAttempts          int         `env:"MAXIMUM_RETRY_ATTEMPTS"              flag:"max-retry-attempts"                  flagDesc:"Maximum retry attempts"`
 	CHSAPIKey                 string      `env:"CHS_INTERNAL_API_KEY"                flag:"chs-api-key"                         flagDesc:"API key to call api's through eric"`
