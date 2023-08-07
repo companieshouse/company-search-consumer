@@ -23,7 +23,7 @@ type Config struct {
 	AdvancedUpsertURL         string      `env:"ADVANCED_UPSERT_URL"                 flag:"advanced-upsert-url"                 flagDesc:"Url for upserting a company to the advanced index"`
 	RetryThrottleRate         int         `env:"RETRY_THROTTLE_RATE_SECONDS"         flag:"retry-throttle-rate-seconds"         flagDesc:"Retry throttle rate seconds"`
 	MaxRetryAttempts          int         `env:"MAXIMUM_RETRY_ATTEMPTS"              flag:"max-retry-attempts"                  flagDesc:"Maximum retry attempts"`
-	CHSAPIKey                 string      `env:"CHS_INTERNAL_API_KEY"                flag:"chs-api-key"                         flagDesc:"API key to call api's through eric"`
+	CHSAPIKey                 string      `env:"CHS_INTERNAL_API_KEY"                flag:"chs-api-key"                         flagDesc:"API key to call api's through eric" json:"-"`
 }
 
 var cfg *Config
